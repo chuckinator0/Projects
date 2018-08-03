@@ -1,0 +1,145 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1504\cocoasubrtf760
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 //This is like a little amoeba that flees in the face of two predators (the dreaded mouse and the notorious octopus bacteria).  It's trapped in a petri dish.  Also, it's traveling in a transparent fluid that provides friction proportional to speed.  There is a patch of blue viscous fluid in the petry dish that also has its own drag effect proportional to speed squared.  As instructed, I started from the "Mover" example code given from the Nature of Code referenced in the "interactive vector motion" section.  I also used methods from the "air and fluid resistance" section for the blue viscous patch.\
+\
+var Mover = function() \{\
+    this.position = new PVector(width/2, height/2);\
+    this.velocity = new PVector(0, 0);\
+    this.acceleration = new PVector(0, 0);\
+    this.mass = 10;\
+\};\
+\
+\
+Mover.prototype.update = function() \{\
+    var mouse = new PVector(mouseX, mouseY);\
+    var dir = PVector.sub(this.position, mouse);\
+    var r = dir.mag();\
+    var mu = this.velocity;  // friction proportional to vel\
+    mu.mult(-0.1);\
+    dir.div(0.08*r*r);  // amoeba feels force from mouse prop. to inverse square of distance\
+    this.acceleration.add(dir);\
+    this.acceleration.add(mu);\
+    this.velocity.add(this.acceleration);\
+    this.velocity.limit(5);\
+    this.position.add(this.velocity);\
+\};\
+\
+Mover.prototype.display = function() \{\
+    stroke(0);\
+    strokeWeight(2);\
+    fill(127);\
+    ellipse(this.position.x, this.position.y, 48, 48);\
+\};\
+\
+Mover.prototype.applyForce = function(force) \{\
+    var f = PVector.div(force, this.mass);\
+    this.acceleration.add(f);\
+\};\
+\
+//bounce off edges\
+Mover.prototype.checkEdges = function() \{\
+\
+    if ((this.position.x > width) || (this.position.x < 0) ) \{\
+        this.velocity.x *= 50;\
+    \}\
+    \
+    if ((this.position.y > height) || (this.position.y < 0) ) \{\
+        this.velocity.y *= 50;\
+    \}\
+\};\
+// I tried doing this by multiplying by -1, switching the direction of motion, but it had exactly the opposite of the intended effect (it sped up moving out of the window).  Somehow, multiplying by POSITIVE 50 seems to do the trick.  This makes no sense to me.\
+\
+\
+\
+\
+var Predator = function(x,y)\{\
+    this.position = new PVector(x,y);\
+\};\
+\
+Predator.prototype.display = function()\{\
+    image(getImage("avatars/orange-juice-squid"), this.x, this.y);\
+\};\
+\
+Predator.prototype.predForce = function(m)\{\
+    var predForce = PVector.sub( m.position , this.position);\
+    var dist = predForce.mag();\
+    predForce.normalize();\
+    predForce.mult( -7 * log(dist) + 35 );\
+    // force is repulsive up close, but oddly attractive past a certain distance, like the amoeba somehow also needs the protection of the predator.\
+    return predForce;\
+    \
+\};\
+\
+\
+\
+var Liquid = function(x, y, w, h, c) \{\
+    this.x = x;\
+    this.y = y;\
+    this.w = w;\
+    this.h = h;\
+    this.c = c;\
+\};\
+\
+  \
+// Is the Mover in the Liquid?\
+Liquid.prototype.contains = function(m) \{\
+    var p = m.position;\
+    return p.x > this.x && p.x < this.x + this.w &&\
+           p.y > this.y && p.y < this.y + this.h;\
+\};\
+  \
+// Calculate drag force\
+Liquid.prototype.calculateDrag = function(m) \{\
+    // Magnitude is coefficient * speed squared\
+    var speed = m.velocity.mag();\
+    var dragMagnitude = this.c * speed * speed;\
+    \
+    // Direction is inverse of velocity\
+    var dragForce = m.velocity.get();\
+    dragForce.mult(-1);\
+    \
+    // Scale according to magnitude\
+    // dragForce.setMag(dragMagnitude);\
+    dragForce.normalize();\
+    dragForce.mult(dragMagnitude);\
+    return dragForce;\
+\};\
+  \
+Liquid.prototype.display = function() \{\
+    noStroke();\
+    fill(28, 120, 186);\
+    rect(this.x, this.y, this.w, this.h);\
+\};\
+\
+\
+\
+var predator = new Predator(100,100);\
+var mover = new Mover();\
+var liquid = new Liquid(width/4, height/2, width/4, height/3, 0.4);\
+\
+var draw = function() \{\
+    background(255, 255, 255);\
+    \
+    if (liquid.contains(mover)) \{\
+        // Calculate drag force\
+        var dragForce = liquid.calculateDrag(mover);\
+        // Apply drag force to Mover\
+        mover.applyForce(dragForce);\
+    \}\
+    \
+    var predForce = predator.predForce(mover);\
+    mover.applyForce(predForce);\
+    mover.update();\
+    mover.checkEdges();\
+    liquid.display();\
+    mover.display(); \
+    predator.display();\
+\
+\};\
+\
+}

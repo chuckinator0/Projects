@@ -1,0 +1,68 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1504\cocoasubrtf760
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 var Car = function() \{\
+    this.position = new PVector(width/2, height/2);\
+    this.velocity = new PVector(0, 0);\
+    this.acceleration = new PVector(0, 0);\
+\};\
+\
+Car.prototype.update = function() \{\
+        \
+    this.velocity.add(this.acceleration);\
+    if (this.velocity.x <0 ) \{\
+        this.velocity.x = 0;\
+    \}\
+    this.velocity.limit(10);\
+    this.position.add(this.velocity);\
+    \
+\};\
+\
+Car.prototype.display = function() \{\
+    stroke(0);\
+    strokeWeight(2);\
+    fill(255, 0, 0);\
+    rect(this.position.x-52, this.position.y-59, 60, 60);\
+    rect(this.position.x-74, this.position.y-30, 100, 31);\
+    fill(92, 92, 92);\
+    ellipse(this.position.x, this.position.y, 30, 26);\
+    ellipse(this.position.x-50, this.position.y, 30, 30);\
+\};\
+\
+Car.prototype.checkEdges = function() \{\
+    if (this.position.x > width) \{\
+        this.position.x = 0;\
+    \} \
+    else if (this.position.x < 0) \{\
+        this.position.x = width;\
+    \}\
+\};\
+\
+var car = new Car();\
+\
+draw = function() \{\
+    \
+    if (keyIsPressed && keyCode === RIGHT)\{\
+        \
+        car.acceleration.set(0.1,0);\
+        \
+    \} else if(keyIsPressed && keyCode === LEFT)\{\
+        \
+        car.acceleration.set(-0.1,0);\
+        \
+    \} else \{\
+        \
+        car.acceleration.set(0,0);\
+        \
+    \}\
+    \
+    background(255, 255, 255);\
+    car.update();\
+    car.checkEdges();\
+    car.display(); \
+\};\
+}

@@ -1,0 +1,45 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1504\cocoasubrtf760
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 angleMode = "radians";\
+\
+var Wave = function(amplitude, period, color) \{\
+    this.startAngle = 0;\
+    this.amplitude = amplitude;\
+    this.period = period;\
+    this.color = color;\
+    this.angleVel = (TWO_PI / this.period) * 5;\
+\};\
+\
+Wave.prototype.update = function() \{\
+    this.startAngle += TWO_PI / this.period;\
+\};\
+\
+Wave.prototype.draw = function() \{\
+    var angle = this.startAngle;\
+    fill(this.color);\
+    for(var x = 0; x <= width; x+=20)\{\
+        var y = this.amplitude * sin(angle);\
+        ellipse(x,y,30,20);\
+        angle += this.angleVel;\
+        \
+    \}\
+\};\
+\
+var wave = new Wave(200, 175, color(255, 0, 0, 100));\
+var wave1 = new Wave(226, 204, color(32, 171, 37, 100));\
+\
+translate(0, height/2);\
+\
+draw = function() \{\
+    background(255);\
+    wave.update();\
+    wave1.update();\
+    wave.draw();\
+    wave1.draw();\
+\};\
+}

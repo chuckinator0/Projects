@@ -1,0 +1,48 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1504\cocoasubrtf760
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 // Generates random numbers using the Monte Carlo Method\
+var monteCarlo = function() \{\
+    while (true) \{\
+        var r1 = random(1);\
+        var probability = r1;\
+        var r2 = random(1);\
+        if (r2 > probability) \{\
+            return r1;\
+        \}\
+    \}\
+\};\
+\
+var Walker = function() \{\
+    this.x = width/2;\
+    this.y = height/2;\
+\};\
+\
+Walker.prototype.display = function() \{\
+    strokeWeight(3);\
+    stroke(0, 0, 0);\
+    point(this.x, this.y);\
+\};\
+\
+// Randomly move up, down, left, right, or stay in one place\
+Walker.prototype.walk = function() \{\
+    var stepSize = 10*monteCarlo();\
+ \
+    var xStepSize = random(-stepSize, stepSize);\
+    var yStepSize = random(-stepSize, stepSize);\
+ \
+    this.x += xStepSize;\
+    this.y += yStepSize;\
+\};\
+\
+var w = new Walker();\
+\
+draw = function() \{\
+    w.walk();\
+    w.display();\
+\};\
+}

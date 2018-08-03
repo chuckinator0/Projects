@@ -1,0 +1,54 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1504\cocoasubrtf760
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 var Balloon = function() \{\
+    this.mass = 1;\
+    this.height = 100;\
+    this.width = 70;\
+    this.position = new PVector(width/2, height-this.height/2-10);\
+    this.velocity = new PVector(0, 0);\
+    this.acceleration = new PVector(0, 0);\
+\};\
+  \
+Balloon.prototype.applyForce = function(force) \{\
+    var f = PVector.div(force, this.mass);\
+    this.acceleration.add(f);\
+\};\
+  \
+Balloon.prototype.update = function() \{\
+    this.velocity.add(this.acceleration);\
+    this.position.add(this.velocity);\
+    this.acceleration.mult(0);\
+\};\
+\
+Balloon.prototype.display = function() \{\
+    stroke(0);\
+    strokeWeight(2);\
+    fill(255, 0, 0);\
+    line(this.position.x, this.position.y, this.position.x, this.position.y + this.height*2);\
+    ellipse(this.position.x, this.position.y, this.width, this.height);\
+\};\
+\
+Balloon.prototype.checkEdges = function() \{\
+    if (this.position.y - this.height/2 < 0)\{\
+        this.velocity.y *= -1;\
+    \}\
+\};\
+\
+\
+var m = new Balloon(); \
+var lift = new PVector( 0 , -0.1 );\
+\
+draw = function() \{\
+    background(224, 224, 224);\
+    m.applyForce(lift);\
+    m.update();\
+    m.display();\
+    m.checkEdges();\
+\};\
+\
+}

@@ -1,0 +1,56 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1504\cocoasubrtf760
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 angleMode = "radians";\
+\
+var Spaceship = function() \{\
+    this.aVelocity = 0;\
+    this.shipAngle = 0;\
+    this.angle = new PVector();\
+    this.velocity = new PVector(random(-0.05, 0.05), random(-0.05, 0.05));\
+    this.amplitude = new PVector(random(20, width/2), random(20, width/2));\
+    this.position = new PVector(0, 0);\
+\};\
+\
+Spaceship.prototype.oscillate = function() \{\
+    var aAcceleration = this.position.mag()/100000;\
+    this.aVelocity += aAcceleration;\
+    this.aVelocity = constrain(this.aVelocity,0,0.01);\
+    this.shipAngle += this.aVelocity;\
+    this.angle.add(this.velocity);\
+    this.position.set(\
+                sin(this.angle.x) * this.amplitude.x,\
+                sin(this.angle.y) * this.amplitude.y);\
+\};\
+\
+Spaceship.prototype.display = function() \{\
+    pushMatrix();\
+    translate(width/2, height/2);\
+    stroke(181, 63, 0);\
+    strokeWeight(9);\
+    line(0, 0, this.position.x, this.position.y);\
+    translate(this.position.x,this.position.y);\
+    rotate(this.shipAngle);\
+    imageMode(CENTER);\
+    image(getImage("space/octopus"),\
+        0, 0,\
+        80, 100);\
+    popMatrix();\
+\};\
+\
+var ships = [];\
+for (var i = 0; i < 10; i++) \{\
+    ships.push(new Spaceship());\
+\}\
+\
+draw = function() \{\
+    background(174, 218, 232);\
+    for (var i = 0; i < ships.length; i++) \{\
+        ships[i].oscillate();\
+        ships[i].display();\
+    \}\
+\};}
