@@ -1,7 +1,4 @@
 '''
-Passes 40/42 tests. Sad. Need to work on detecting cycles
-
-
 There are a total of n courses you have to take, labeled from 0 to n-1.
 
 Some courses may have prerequisites, for example to take course 0 you have to first take course 1, which is expressed as a pair: [0,1]
@@ -34,10 +31,6 @@ globally.
 Note also that we could do BFS as well if we assume cycles happen close to the root node. 
 '''
 
-# We can use python's deque data structure. This is a data structure where popping on the left corresponds to using
-# a stack, whereas popping on the right corresponds to using a queue. This will make it possible to flexibly switch
-# between depth first (stack) and breadth first (queue) search.
-import collections
 
 def make_graph(numCourses, prerequisites):
 	'''
@@ -63,45 +56,30 @@ def make_graph(numCourses, prerequisites):
 			graph[course] = []
 	return graph
 
-
-
-
-def detect_cycle(root, graph, unvisited_nodes):
+def detect_cycle(graph, node, visited, current_path):
 	'''
-	This function will take a root node in the graph, traverse with depth first search, and return true if the traversal
-	detected a cycle, and false if the traversal encountered no cycles. The unvisited_nodes is a set that keeps track
-	globally of nodes that have been visited over the course of possibly several cycle detections.
+	This function recursively detects whether a cycle has occured on a single iteration depth first search
 	'''
-	stack = collections.deque()
-	stack.appendleft(root)
-	visited = set()
-	current_path = set()
-	current_path_list = []
+	# add node to visited set
+	visited.add(node)
+	# add node to current path
+	current_path.add(node)
 
-	while stack:
-		node = stack.popleft()
-		visited.add(node)
-		current_path.add(node)
-		current_path_list.append(node)
-
-		# remove node from global unvisited nodes so that we can reach all connected components in the canFinish function
-		if node in unvisited_nodes:
-			unvisited_nodes.remove(node)
-
-		# For each neighbor, if the neighbor hasn't been visited, push it to the stack
-		for neighbor in graph[node]:
-			if neighbor in current_path:
+	# recur for all neighbors
+	# if any neighbor is visited AND in the current_path, then we have detected a cycle
+	for neighbor in graph[node]:
+		if neighbor not in visited:
+			# if a cycle would be detected further down the path, then there has been a cycle
+			if detect_cycle(graph, neighbor, visited, current_path) == True:
 				return True
-			elif neighbor not in visited:
-				stack.appendleft(neighbor)
-		# If we have reached the end of a path, reset the path
-		if graph[node] == []:
-			current_path = set()
-			current_path_list = [current_path_list[0]]
-			current_path.add(current_path_list[0])
+		# at this point, we will have found a cycle if the neighbor has been visited and is in the current path
+		elif neighbor in current_path:
+			return True
 
-	
-	return False # If we survive the while loop, it means we have completed DFS and found no cycles
+	# if we haven't returned at this point, it means no cycles have been detected below node,
+	# so we remove the node from the current path and signal no cycle has been detected below it
+	current_path.remove(node)
+	return False
 
 
 def canFinish(numCourses, prerequisites):
@@ -111,6 +89,8 @@ def canFinish(numCourses, prerequisites):
 	impossible to finish.
 	'''
 	unvisited_nodes = set() # keep a global set of nodes that haven't been visited
+	visited = set() # keep set of visited nodes
+	current_path = set() # initialize current path, which will change as detect_cycle recurses
 	
 	graph = make_graph(numCourses, prerequisites)
 
@@ -120,7 +100,7 @@ def canFinish(numCourses, prerequisites):
 
 	while unvisited_nodes:
 		node = unvisited_nodes.pop()
-		if detect_cycle(node, graph, unvisited_nodes):
+		if detect_cycle(graph, node, visited, current_path):
 			return False # if a cycle is detected, then it's impossible to finish the courses
 
 	# If we have survived the process of detecting cycles for each component of the graph, then there are
