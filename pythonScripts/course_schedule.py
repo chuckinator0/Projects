@@ -56,12 +56,14 @@ def make_graph(numCourses, prerequisites):
 			graph[course] = []
 	return graph
 
-def detect_cycle(graph, node, visited, current_path):
+def detect_cycle(graph, node, visited, current_path, unvisited_nodes):
 	'''
 	This function recursively detects whether a cycle has occured on a single iteration depth first search
 	'''
-	# add node to visited set
+	# add node to visited set and remove it from unvisited
 	visited.add(node)
+	if node in unvisited_nodes:
+		unvisited_nodes.remove(node)
 	# add node to current path
 	current_path.add(node)
 
@@ -70,7 +72,7 @@ def detect_cycle(graph, node, visited, current_path):
 	for neighbor in graph[node]:
 		if neighbor not in visited:
 			# if a cycle would be detected further down the path, then there has been a cycle
-			if detect_cycle(graph, neighbor, visited, current_path) == True:
+			if detect_cycle(graph, neighbor, visited, current_path, unvisited_nodes) == True:
 				return True
 		# at this point, we will have found a cycle if the neighbor has been visited and is in the current path
 		elif neighbor in current_path:
@@ -100,7 +102,7 @@ def canFinish(numCourses, prerequisites):
 
 	while unvisited_nodes:
 		node = unvisited_nodes.pop()
-		if detect_cycle(graph, node, visited, current_path):
+		if detect_cycle(graph, node, visited, current_path, unvisited_nodes):
 			return False # if a cycle is detected, then it's impossible to finish the courses
 
 	# If we have survived the process of detecting cycles for each component of the graph, then there are
