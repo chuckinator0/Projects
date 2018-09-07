@@ -1,3 +1,5 @@
+'''This file was given to me by an alum at Insight Data Science'''
+
 """ Python data structures. """
 
 # Boolean
