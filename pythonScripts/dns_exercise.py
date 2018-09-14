@@ -49,7 +49,7 @@ with open(file_path, 'r') as file:
 with open(file_path, 'r') as file:
 	for line in file:
 		line_split = line.split(' ')
-		name_server = re.search('ANY',line)
+		name_server = re.search('\sANY\?\s',line)
 		if name_server:
 			print(line_split[-2])
 

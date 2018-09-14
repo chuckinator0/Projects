@@ -1,4 +1,4 @@
-#!/bin/bash
+ #!/bin/bash
 
 # Valid Phone Numbers
 
@@ -46,8 +46,10 @@
 ## Same as before, but use \d for digit.
 
 ### Solution 3
-egrep '^(\d{3}-|\(\d{3}\) )\d{3}-\d{4}$' $1
+egrep '^(\d{3}-|\(\d{3}\)\s)\d{3}-\d{4}$' $1
 
-## This time, we do 'xxx- or (xxx)' followed by xxx-xxxx.
+## This time, we do 'xxx- or (xxx) ' followed by xxx-xxxx. We also used \s to signifiy the space after the parentheses.
+## Keep in mind that the spacing and exact placement of the characters matter with regular expressions, which
+## makes them very hard to read.
 
 
