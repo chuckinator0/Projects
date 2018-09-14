@@ -36,3 +36,5 @@ def schemes(n):
 
 for i in range(6):
     print(len(schemes(i)))
+
+print(schemes(4))
