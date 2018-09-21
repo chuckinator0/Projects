@@ -1,5 +1,5 @@
 """
-Parse a log file!
+Parse a log file! See log_practice.log.
 """
 
 
