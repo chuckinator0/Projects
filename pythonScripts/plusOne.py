@@ -42,5 +42,5 @@ def plusOne(digits):
 	else:
 		return carryOne(digits,-1)
 
-digits = [9,9,9]
+digits = [9,9,7]
 print(plusOne(digits))

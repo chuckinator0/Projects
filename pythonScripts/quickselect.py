@@ -12,6 +12,7 @@ def quickselect(l, k ):
 	pivot = random.choice(l)
 
 	# low is a list of numbers less than or equal to the pivot.
+	# included case when the list contains None elements
 	low = [num for num in l if num <= pivot]
 	# high is a list of numbers greater than the pivot.
 	high = [num for num in l if num > pivot]
