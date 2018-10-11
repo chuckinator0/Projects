@@ -6,7 +6,7 @@ Pretty cool interactive resource: http://me.dt.in.th/page/Quicksort/
 '''
 
 # We are going to choose pivots randomly to avoid the situation where data is 
-# cherry picked to slow down quicksort at the midpoint.
+# cherry picked to slow down quicksort at the left endpoint.
 import random
 
 # Some commentary. Quicksort is a lot like mergesort in the sense that we
@@ -37,7 +37,7 @@ def quicksort( array, low, high ):
 	# greater than or equal to the pivot.
 
 	# First, we swap the pivot with the leftmost element and then start scanning from left to right.
-	# When we find an element greater than or equal to the pivot, we will record it and continue scanning until
+	# When we find an element greater than or equal to the pivot, we will remember it and continue scanning until
 	# we find an element less than the pivot, then swap those elements. Once we get to the end of the
 	# list (so our index is one to the right of the end), we swap the pivot with the element that comes before the current recorded value.
 
@@ -80,7 +80,7 @@ array2 = [4]
 array3 = [5,4]
 array4 = [1,4,3,5,77,7]
 
-print(quicksort(array4, 0, len(array4)))
+print(quicksort(array4, 0, len(array4))) # should give [1, 3, 4, 5, 7, 77]
 
 
 
