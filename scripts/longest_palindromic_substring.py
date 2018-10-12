@@ -28,6 +28,10 @@ def isPalindromicSubstring(input_string, i, j, memo = set()):
 	# Our memo is a set of tuples of the form (i,j) that records
 	# whether isPalindromicSubstring(input_string,i,j) is true.
 	# We check the memo first for the smaller palindrome from i+1 to j-1.
+	# I decided to make the function return this memo rather than 
+	# true or false because we can check truth value by checking
+	# membership in the set. The memo allows us to speed up recursion by storing
+	# previously calculated values in the set.
 	if (i+1,j-1) in memo and input_string[i] == input_string[j]:
 		memo.add((i,j))
 		return memo
@@ -67,20 +71,13 @@ def longestPalindrome(input_string):
 	memo = set()
 	for i in range(len(input_string)):
 		for j in range(i,len(input_string)):
+			isPalindromicSubstring(input_string,i,j,memo)
 			if (i,j) in memo:
 				palindrome = input_string[i:j+1]
 				length = len(palindrome)
 				if length > longest:
 					longest = length
 					longest_palindrome = palindrome
-			else:
-				memo.union( isPalindromicSubstring(input_string,i,j,memo) )
-				if (i,j) in memo:
-					palindrome = input_string[i:j+1]
-					length = len(palindrome)
-					if length > longest:
-						longest = length
-						longest_palindrome = palindrome
 	return longest_palindrome
 
 
