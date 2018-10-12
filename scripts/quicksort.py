@@ -19,9 +19,9 @@ import random
 # mergesort because it doesn't create extra arrays. It changes the array in-place.
 
 def quicksort( array, low, high ):
-	# low is the starting index of the left subarray, and high is the highest
+	# low is the starting index of the subarray currently being processed, and high is the highest
 	# index the subarray reaches (plus one, because Python counts from zero).
-	# This is important when we recurse.
+	# This is important when we recurse on subarays.
 
 	# Base case. A singleton array is already sorted! We can assume our array has two or more elements after this.
 	if len(array[low:high]) <= 1:
@@ -45,13 +45,13 @@ def quicksort( array, low, high ):
 	array[low], array[pivot_index] = array[pivot_index], array[low]
 
 	# imagine all the elements right of the pivot are cards face down. We open a card and check its value. If the value is less than the pivot,
-	# we swap it with the current card. We only update this index after a swap. We are remembering the leftmost element and index that is greater than
+	# we swap it with the remembered card. We only update the remembered index after a swap. We are remembering the leftmost element and index that is greater than
 	# the pivot so we can swap it when we find a value less than the pivot.
 	remembered_index =  low + 1
 
 	for index in range(low + 1,high):
 		if array[index] < pivot:
-			# if we open a card less than the pivot, we swap and update the current index
+			# if we open a card less than the pivot, we swap and update the remembered index
 			array[remembered_index], array[index] = array[index], array[remembered_index]
 			remembered_index += 1
 		# if we find an element greater than equal to pivot, we don't swap and we don't update
@@ -68,7 +68,7 @@ def quicksort( array, low, high ):
 	# Now, we recursively call quicksort on the left and right subarrays
 	# Notice we are just calling these functions, not taking up extra space by assigning their 
 	# return values. The processes happening on these subarrays is mutating array itself.
-	quicksort( array, 0, pivot_index )
+	quicksort( array, low, pivot_index )
 	quicksort( array, pivot_index + 1,  high)
 
 	# We have now mutated the array to put every element in its correct sorted position
