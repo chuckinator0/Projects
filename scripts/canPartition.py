@@ -28,20 +28,26 @@ def helper(array,target):
 	# achieve a sum of 'sum' with a subarray of the input array.
 	# We eventually want to find whether it's possible to achieve a sum of
 	# target, so the length of the memo goes from 0 to target (i.e. len = target + 1)
-	memo = [False]*(target + 1)
+	memo = {}
 	# If we choose no elements of the array, we will have achieved a sum
 	# of zero, so memo[0] is True. This is the base case.
 	memo[0] = True
 
-	for value in array:
-		temp_memo = [False]*(target + 1)
-		for j in range(0,target+1 - value):
-			if memo[j]:
-				temp_memo[j + value] = True
-		for i in range(target+1):
-			memo[i] = memo[i] or temp_memo[i]
+	for element in array:
+		temp_memo = {}
+		# for all the sums j which are possible to make will all elements
+		# before the current element,
+		for j in memo:
+			# it is possible to make the sum (j+element)
+			temp_memo[j + element] = True
+		# add all these new possible sums from the temp memo into the memo
+		for i in temp_memo:
+			memo[i] = temp_memo[i]
 
-	return memo[target]
+	if target in memo:
+		return True
+	else:
+		return False
 
 
 def canPartition(array):
