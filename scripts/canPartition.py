@@ -27,7 +27,7 @@ def helper(array,target):
 	# Initialize a memo. Here, memo[sum] is True if it's possible to
 	# achieve a sum of 'sum' with a subarray of the input array.
 	# We eventually want to find whether it's possible to achieve a sum of
-	# target, so the length of the memo goes from 0 to target (i.e. len = target + 1)
+	# target
 	memo = {}
 	# If we choose no elements of the array, we will have achieved a sum
 	# of zero, so memo[0] is True. This is the base case.
