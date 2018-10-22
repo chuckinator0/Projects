@@ -38,16 +38,19 @@ def helper(array,target):
 		# for all the sums j which are possible to make will all elements
 		# before the current element,
 		for j in memo:
-			# it is possible to make the sum (j+element)
-			temp_memo[j + element] = True
+			new_sum = j + element
+			if new_sum == target:
+				return True
+			elif new_sum > target:
+				continue
+			else:
+				# it is possible to make the new_sum
+				temp_memo[j + element] = True
 		# add all these new possible sums from the temp memo into the memo
 		for i in temp_memo:
 			memo[i] = temp_memo[i]
 
-	if target in memo:
-		return True
-	else:
-		return False
+	return False
 
 
 def canPartition(array):
@@ -68,4 +71,4 @@ arr5 = [1,1,1]
 arr6 = [3,3,3,4,5]
 arr7 = [1,2,5]
 
-print(canPartition(arr7))
+print(canPartition(arr6))
