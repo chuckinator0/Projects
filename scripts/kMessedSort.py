@@ -41,3 +41,21 @@ index = 9   arr = [(1), (2), (3), (4), (5), (6), (7), (8), (9), (10)],  pop 10 f
 return arr
 
 '''
+
+import heapq
+
+def sort_k_messed_array(arr, k):
+  if len(arr) < 2:
+    return arr
+  minheap = [x for x in arr[0:k+1]]
+  heapq.heapify(minheap)
+  j = k + 1
+  for i in range(len(arr)):
+    arr[i] = heapq.heappop(minheap)
+    if j < len(arr):
+      heapq.heappush(minheap, arr[j])
+      j += 1
+  return arr
+
+arr,k = [1, 4, 5, 2, 3, 7, 8, 6, 10, 9], 2
+print(sort_k_messed_array(arr,k))
