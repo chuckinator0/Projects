@@ -111,17 +111,19 @@ I don't understant this very well yet.
 '''
 
 '''
-Here's a different approach. If you number the nodes:
-                1
-           /         \
-          2           3
-        /   \        /  \
-       4     5      6      7
-      / \   /  \    / \    / \
-     8   9 10   11  12 13 14  15
-then the node at (level,pos) will have label k = 2^level + position-1. The parent node will have label
-floor(k/2). We need to take the label of the node, and recurse up the tree to see how many switches (right paths)
-there are.
+A different, better, more readable recursive solution
 '''
+def findProfession4(level,pos):
+    if level == 1:
+        return "Engineer"
+    else:
+        if pos %2 == 1:
+            return findProfession(level-1,(pos+1)//2)
+        else:
+            parent_profession = findProfession(level-1,pos//2)
+            if parent_profession == "Engineer":
+                return "Doctor"
+            else:
+                return "Engineer"
 
 
