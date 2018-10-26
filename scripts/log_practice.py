@@ -7,13 +7,13 @@ def hours(string):
     return int(string[0:2])
 
 
-def min(string):
+def minutes(string):
     return int(string[3:5])
 
 
 def duration(string1, string2):
-    minutes1 = 60 * hours(string1) + min(string1)
-    minutes2 = 60 * hours(string2) + min(string2)
+    minutes1 = 60 * hours(string1) + minutes(string1)
+    minutes2 = 60 * hours(string2) + minutes(string2)
     difference = abs(minutes2 - minutes1)
     return difference
 
