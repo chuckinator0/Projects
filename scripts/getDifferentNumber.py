@@ -55,16 +55,6 @@ def getDiff(arr):
   return len(arr)
 
 
-
-def get_different_number(arr):
-  mySet = set(arr)
-  number = 0
-  while number < len(arr):
-    if number not in mySet:
-      return number
-    number += 1
-  return len(arr)
-
 test = [5,20,2,1,3,5,0,6,7,20]
 test1 = [0,1,2,3]
 print(get_different_number(test))
