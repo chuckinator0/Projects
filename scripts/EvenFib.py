@@ -1,5 +1,5 @@
 # By considering the terms in the Fibonacci sequence whose values do not
-# exceed four million,
+# exceed m,
 # find the sum of the even-valued terms.
 
 Fibonacci = [1,1]
@@ -14,3 +14,22 @@ for x in Fibonacci:
         total += x
 
 print(total)
+
+'''
+We can do better with a memo! Also more general.
+'''
+
+def evenFibSum(max_value):
+	if max_value < 2:
+		return 0
+	output_sum = 0
+	memo = [1,1] # remember fib n-2, fib n-1
+	while memo[1] < max_value:
+		if memo[1] % 2 == 0:
+			output_sum += memo[1]
+		new_fib = memo[0] + memo[1] # get new fib number
+		memo[0], memo[1] = memo[1], new_fib # update memo
+	return output_sum
+
+print(evenFibSum(4000000))
+

@@ -2,7 +2,7 @@
 Just playing with permutations
 '''
 import itertools
-s = "abcdefghiç"
+s = "abcdef"
 
 print(list(itertools.permutations(s)),"\n")
 
