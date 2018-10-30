@@ -41,27 +41,28 @@ def primefactorization(x):
         factors.append(x)
     return factors
 
-#This method produces the nth triangular number.  This will be useful
-# for implementing a program for counting the total number of divisors of
-# an integer
-def Triangle(n):
-    return n*(n+1)/2
+# #This method produces the nth triangular number.  This will be useful
+# # for implementing a program for counting the total number of divisors of
+# # an integer
+# def Triangle(n):
+#     return n*(n+1)/2
 
-# This method will count the number divisors of an integer. I developed this
-# using an idea from graph theory (complete graphs and complete subgraphs)
-# which invokes the formula for triangular numbers.  I include an unfinished
-# method to show that I am comfortable sharing a work-in-progress and am open
-# to discuss ideas.
-def countdivisors(j):
-    count = len(shortfactorization(j)) # powers of prime factors are factors
-    count += 1 #
-    n = len(primefactorization(j))
-    count += Triangle(n-1)
-    for i in primefactorization(j):
-        count -= Triangle(primefactorization(j).count(i)-1)
-    
-    return count
 
-print(countdivisors(12))
-print(primefactorization(12))
-print(shortfactorization(12))
+# This method will give a set of divisors of an integer.
+def divisors(x):
+    factors = primefactorization(x)
+    divisors = set([1])
+    for factor in factors:
+        temp_set = divisors.copy()
+        for divisor in temp_set:
+            new_divisor = divisor * factor
+            divisors.add(new_divisor)
+    return divisors
+
+
+
+val = 12
+print(shortfactorization(val))
+print(primefactorization(val))
+print(divisors(val))
+
