@@ -1,45 +1,42 @@
-"""
-Given a pattern and a string str, find if str follows the same pattern.
+'''
+Given an array strings, determine whether it follows the sequence given in the patterns array. In other words,
+there should be no i and j for which strings[i] = strings[j] and patterns[i] ≠ patterns[j]
+or for which strings[i] ≠ strings[j] and patterns[i] = patterns[j].
 
-Here follow means a full match, such that there is a bijection between a letter in pattern and a non-empty word in str.
+Example
 
-Example 1:
+For strings = ["cat", "dog", "dog"] and patterns = ["a", "b", "b"], the output should be
+areFollowingPatterns(strings, patterns) = true;
+For strings = ["cat", "dog", "doggy"] and patterns = ["a", "b", "b"], the output should be
+areFollowingPatterns(strings, patterns) = false.
+'''
 
-Input: pattern = "abba", str = "dog cat cat dog"
-Output: true
-Example 2:
+from collections import defaultdict
+def areFollowingPatterns(strings, patterns):
+	# if the lengths are different, then then strings cannot possibly follow the pattern.
+    if len(strings) != len(patterns):
+        return False
+    n = len(strings)
+	# make two dictionaries to track word-pattern associations and check
+	# whether we have seen a word or pattern before
+    word_dict = defaultdict(str) # {word: pattern}
+    pattern_dict = defaultdict(str) # {pattern: word}
+    for i in range(n):
+        word = strings[i]
+        pattern = patterns[i]
+		# if the word is new and the pattern is new, then we add {word:pattern} to the word dictionary
+		# and add {pattern:word} to the pattern dictionary. Note we need both dictionaries because it's possible
+		# for a word to be new and not the pattern, and vice versa, so we really need to check that both the word and
+		# pattern are new.
+        if word not in word_dict and pattern not in pattern_dict:
+            word_dict[word] = pattern
+            pattern_dict[pattern] = word
+		# Otherwise, we have already encounterend this word or pattern before, so the pattern
+		# better match what we already have stored. If it doesn't, then we are not following the pattern
+        elif word_dict[word] != pattern:
+            return False
+    return True
 
-Input:pattern = "abba", str = "dog cat cat fish"
-Output: false
-Example 3:
-
-Input: pattern = "aaaa", str = "dog cat cat dog"
-Output: false
-"""
-
-def check_letter(letter, word, letter_to_word_dict, word_to_letter_dict):
-	if letter_to_word_dict[letter] == word and word_to_letter_dict[word] == letter:
-		return True
-	else:
-		return False
-
-letter_to_word_dict = {}
-word_to_letter_dict = {}
-
-def wordPattern(pattern, string):
-	wordlist = string.split()
-	if len(pattern) != len(wordlist):
-		return False
-	for i in range(len(wordlist)):
-		if pattern[i] not in letter_to_word_dict:
-			letter_to_word_dict[pattern[i]] = wordlist[i]
-		if wordlist[i] not in word_to_letter_dict:
-			word_to_letter_dict[wordlist[i]] = pattern[i]
-		if not check_letter(pattern[i], wordlist[i], letter_to_word_dict, word_to_letter_dict):
-			return False
-	return True
-
-string = ""
-pattern = ""
-
-print(wordPattern(pattern,string))
+strings = ['cat', 'dog', 'doggy']
+patterns = ['a','b','b']
+print(areFollowingPatterns(strings,patterns))
