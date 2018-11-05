@@ -11,6 +11,9 @@ For strings = ["cat", "dog", "doggy"] and patterns = ["a", "b", "b"], the output
 areFollowingPatterns(strings, patterns) = false.
 '''
 
+# default dict simplifies the situations where we want to check a key in a dictionary
+# that might not have been given a value yet. However, this introduces a bug if your patterns array has
+# the default value.
 from collections import defaultdict
 def areFollowingPatterns(strings, patterns):
 	# if the lengths are different, then then strings cannot possibly follow the pattern.
@@ -32,11 +35,11 @@ def areFollowingPatterns(strings, patterns):
             word_dict[word] = pattern
             pattern_dict[pattern] = word
 		# Otherwise, we have already encounterend this word or pattern before, so the pattern
-		# better match what we already have stored. If it doesn't, then we are not following the pattern
-        elif word_dict[word] != pattern:
+		# better match what we already have stored. If it doesn't, then we are not following the pattern.
+        elif word_dict[word] != pattern or pattern_dict[pattern] != word:
             return False
     return True
 
 strings = ['cat', 'dog', 'doggy']
-patterns = ['a','b','b']
+patterns = ['a','','']
 print(areFollowingPatterns(strings,patterns))
