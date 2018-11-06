@@ -56,6 +56,7 @@ for i in randlist:
 print(santaDict)
 
 # email the results
+# For more info, see http://naelshiab.com/tutorial-send-email-python/
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
