@@ -18,20 +18,4 @@ def fib(n):
 	return next_fib
 
 
-
-def fib_dynamic(n):
-	'''
-	fibonacci with dynamic programming
-	'''
-	pass
-
-
-
-def fib_explicit(n):
-	'''
-	compute fib(n) explicitly with a formula
-	'''
-	pass
-
-
 print([fib(i) for i in range(1,6)])
