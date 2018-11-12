@@ -7,12 +7,13 @@ name = {} # {ip address: name}
 file = 'test.csv'
 
 # data has fields ip,name,email
-# populate ip_dict and email_dict
+# populate ip_dict and name dictionaries 
 with open(file,'r') as inputFile:
 	data = csv.DictReader(inputFile, delimiter = ',')
 	# skip header row
 	next(data)
-	# populate ip dictionary with associated alert email address
+	# populate ip dictionary with associated alert email address.
+	# populate name dictionary with name associated with each IP.
 	for row in data:
 		ip_dict[row['ip']] = row['email']
 		name[row['ip']] = row['name']
@@ -20,5 +21,5 @@ with open(file,'r') as inputFile:
 for unresponsiveIP in sys.stdin:
 	unresponsiveIP = unresponsiveIP.strip()
 	print(
-f'Please alert {name[unresponsiveIP]} that {unresponsiveIP} is not responding. Email {ip_dict[unresponsiveIP]}')
+f'Please alert {name[unresponsiveIP]} that {unresponsiveIP} is not responding. Email {ip_dict[unresponsiveIP]}.')
 

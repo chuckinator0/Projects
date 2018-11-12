@@ -13,7 +13,7 @@ The `test.py` file is a python script that takes the unresponsive IPs produced w
 The `alert.sh` file is a bash script that automates the process of alerting. Calling this one command combines `test.sh` and `test.py`.
 
 ## To run:
-Simply run `./alert.sh` to see output for various unresponsive IPs.
+Simply run `./alert.sh` to see output for various unresponsive IPs. The `alert.sh` program uses `python3`, so just make sure you have Python 3 installed, too!
 
 ## What about emailing?
 See [this neat tutorial](http://naelshiab.com/tutorial-send-email-python/) about how to use python's `smtplib` to automate emails. You can also check my [secret santa project](https://github.com/chuckinator0/Projects/tree/master/secretSanta) to see email automation in action.
