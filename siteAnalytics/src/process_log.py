@@ -24,22 +24,9 @@ The program is organized as follows:
 
 
 # The datetime module allows for arithmetic with dates, which will prove useful for features 3 and 4.
-import datetime
-
+from datetime import datetime, timedelta
+import re
 import sys
-
-# Establish filepaths for the input (log.txt) an output files (hours.txt, hosts.txt, blocked.txt, and resources.txt).
-logPath = sys.argv[1]
-hostsPath = sys.argv[2]
-hoursPath = sys.argv[3]
-resourcesPath = sys.argv[4]
-blockedPath = sys.argv[5]
-
-# Open output files for writing in the main program.
-hoursFile = open(hoursPath, 'w')
-hostsFile = open(hostsPath, 'w')
-blockedFile = open(blockedPath, 'w')
-resourcesFile = open(resourcesPath, 'w')
 
 # Data description:
 # Each line of log.txt is one long string. After splitting a line, we obtain a list of strings. Here is what each
@@ -68,15 +55,6 @@ resourceDict = {}
 # Create hours.txt dictionary of the form {starting time: number of accesses to the site in the following hour}, where
 # starting time is a Python datetime object. This is for Feature 3.
 hoursDict = {}
-
-# The resolution (in seconds) is the precision with which the busiest hours are defined. Setting resolution = 1 second
-# gives the full functionality intended for this feature, but is highly resource intensive. I recommend setting
-# resource = 600 seconds (ten minutes) for a robust metric of busy time windows at a much greater efficiency. The code
-# requires the resolution to divide 3600, but if a different resolution is given, then it will be increased until it
-# divides 3600.
-resolution = 600
-while 3600 % resolution != 0:
-    resolution += 1
 
 # Create dictionary to track failed logins for possible future blocking. The dictionary has the form
 # {host: [list of times of attempted logins] }. This feature assumes the logins are processed in chronological order.
@@ -118,187 +96,143 @@ def topTen(dictionary):
     topTen.reverse()
     return topTen
 
-def monthNumber(abbrev):
-    '''monthNumber function translates the 3-letter month abbreviation to the month number. 
-    This will be used for Feature 4.'''
-    return {
-        'Jan': 1,
-        'Feb': 2,
-        'Mar': 3,
-        'Apr': 4,
-        'May': 5,
-        'Jun': 6,
-        'Jul': 7,
-        'Aug': 8,
-        'Sep': 9,
-        'Oct': 10,
-        'Nov': 11,
-        'Dec': 12
-    }[abbrev]
-
-
-def monthAbbr(number):
-    '''monthAbbr translates the month number to the 3-letter month abbreviation. This will be used for Feature 4.'''
-    monthlist = [
-        'Jan',
-        'Feb',
-        'Mar',
-        'Apr',
-        'May',
-        'Jun',
-        'Jul',
-        'Aug',
-        'Sep',
-        'Oct',
-        'Nov',
-        'Dec'
-    ]
-    return monthlist[number - 1]
-
-
 def convertdatetime(line):
     '''The convertdatetime function takes a line of data and returns its associated Python datetime object.'''
     lineSplit = line.split()
-    # t is the time in the data
-    t = lineSplit[3]
-    # splice t to get the year, month, day, hour, minute, and second.
-    return datetime.datetime(
-        year=int(t[8:12]),
-        month=monthNumber(t[4:7]),
-        day=int(t[1:3]),
-        hour=int(t[13:15]),
-        minute=int(t[16:18]),
-        second=int(t[19:21])
-    )
+    return parseDateTime(lineSplit[3])
+
+def parseDateTime(t):
+    # [01/Jul/1995:00:00:59
+    return datetime.strptime(t, "[%d/%b/%Y:%H:%M:%S")
 
 def convertHours(time):
     '''The convertHours function converts a datetime object to the specified output format for hours.txt.'''
-    timestr = str(time)
-    year = timestr[0:4]
-    month = monthAbbr(int(timestr[5:7]))
-    day = timestr[8:10]
-    hour = timestr[11:13]
-    minute = timestr[14:16]
-    second = timestr[17:19]
-    return day + '/' + month + '/' + year + ':' + hour + ':' + minute + ':' + second
+    return datetime.strftime(time, "%d/%b/%Y:%H:%M:%S")
 
-def roundDown(time, resolution):
-    '''
-    roundDown rounds a datetime down accoridng to the resolution. If the resolution is 1 second, there is no rounding.
-    If the resolution is 600 seconds, the time is rounded down to the last multiple of 10 minutes. If the resolution 
-    is 3600 seconds, the time is rounded down to the last hour.
-    '''
-    modtime = (int(time.minute) * 60 + int(time.second)) % resolution
-    roundedtime = time - datetime.timedelta(seconds=modtime)
-    return roundedtime
+def roundDown(dt):
+    return dt.replace(minute=0, second=0)
 
-def feature1(line):
+def feature1(entry):
     '''This function produces a dictionary {hosts: number of accesses by host} (see hostDict)'''
-    lineSplit = line.split()
-    host = lineSplit[0]
     # if new host is already in the dictionary, add 1 to the number of accesses.
-    if host in hostDict:
-        hostDict[host] += 1
+    if entry.host in hostDict:
+        hostDict[entry.host] += 1
     # if new host is not in the dictionary yet, put it in the dictionary and set number of accesses to 1
     else:
-        hostDict[host] = 1
+        hostDict[entry.host] = 1
 
-def feature2(line):
+def feature2(entry):
     '''This function produces a dictionary {resource: data} (see resourceDict)'''
-    lineSplit = line.split()
-    # ignore 404 errors that give '-' for bytes
-    if lineSplit[-1] != '-':
-        resource = lineSplit[6]
-        dataBytes = int(lineSplit[-1])
-        if resource in resourceDict:
-            resourceDict[resource] += dataBytes
-        else:
-            resourceDict[resource] = dataBytes
+    if entry.resource in resourceDict:
+        resourceDict[entry.resource] += entry.contentLength
+    else:
+        resourceDict[entry.resource] = entry.contentLength
 
-def feature3(line, resolution):
-    '''
-    The resolution (in seconds) is the precision with which the busiest hours are defined. Setting resolution = 1 second
-    gives the full functionality intended for this feature, but is highly resource intensive. I recommend setting
-    resource = 600 seconds (ten minutes) for a robust metric of busy time windows at a much greater efficiency. The code
-    requires the resolution to divide 3600, but if a different resolution is given, then it will be increased until it 
-    divides 3600.
-    '''
-    time = convertdatetime(line)
-    roundedtime = roundDown(time, resolution)
+def feature3(entry):
+    # Calculate busiest hours
+    roundedtime = roundDown(entry.timestamp)
     if roundedtime not in hoursDict:
         hoursDict[roundedtime] = 1
     else:
         hoursDict[roundedtime] += 1
-    x = roundedtime - datetime.timedelta(seconds=resolution)
-    while x > time - datetime.timedelta(hours=1):
-        if x in hoursDict:
-            hoursDict[x] += 1
-        x = x - datetime.timedelta(seconds=resolution)
 
-def feature4(line):
+def feature4(entry):
     '''This function blocks users who fail on login 3 times in 20 seconds and puts them on a 5 minute cooldown.'''
-    lineSplit = line.split()
-    resource = lineSplit[6]
-    if resource == '/login':
-        host = lineSplit[0]
-        time = convertdatetime(line)
-        replyCode = lineSplit[-2]
-        if host in blocked:
-            if time > blocked[host]:
-                del failed[host]
-                del blocked[host]
+    if entry.resource == '/login':
+        if entry.host in blocked:
+            if entry.timestamp > blocked[entry.host]:
+                del failed[entry.host]
+                del blocked[entry.host]
             else:
-                print(line, file=blockedFile)
+                print(entry.line, file=blockedFile)
                 return
-        if replyCode == '401':
-            if host in failed:
-                failed[host].append(time)
-                if len(failed[host]) > 3:
-                    del failed[host][0]
+        if entry.statusCode == '401':
+            if entry.host in failed:
+                failed[entry.host].append(entry.timestamp)
+                if len(failed[entry.host]) > 3:
+                    del failed[entry.host][0]
             else:
-                failed[host] = []
-                failed[host].append(time)
-            if len(failed[host]) >= 3 and failed[host][-1] - failed[host][-3] < datetime.timedelta(seconds=20):
-                cooldowntime = time + datetime.timedelta(minutes=5)
-                blocked[host] = cooldowntime
-        elif replyCode == '200':
-            if host in failed:
+                failed[entry.host] = []
+                failed[entry.host].append(entry.timestamp)
+            if is_blocked(entry.host):
+                cooldowntime = entry.timestamp + timedelta(minutes=5)
+                blocked[entry.host] = cooldowntime
+        elif entry.statusCode == '200':
+            if entry.host in failed:
                 del failed[host]
-            if host in blocked:
+            if entry.host in blocked:
                 del blocked[host]
 
+def is_blocked(host):
+    return len(failed[host]) >= 3 and failed[host][-1] - failed[host][-3] < timedelta(seconds=20)
 
 '''Main Program'''
 
+class LogEntry():
+    LOG_FORMAT = re.compile('([\w\-\.]+) - - \[([^\]]+)\] "(\w+) ([^\s]+)[^"]*" (\d+) (-|\d+)')
+    class ParseError(Exception):
+        pass
+
+    def __init__(self, line):
+        self.line = line
+        matches = LogEntry.LOG_FORMAT.match(line)
+        if matches:
+            self.host, self.timestamp, self.verb, self.resource, self.statusCode, self.contentLength = matches.groups()
+            self.timestamp = datetime.strptime(self.timestamp, "%d/%b/%Y:%H:%M:%S %z")
+            self.statusCode = int(self.statusCode)
+            if self.contentLength == '-':
+                self.contentLength = 0
+            self.contentLength = int(self.contentLength)
+        else:
+            raise LogEntry.ParseError(line)
+
 ## Perform relevant computations, using functions as needed
+def main():
+    with open(logPath, 'r', errors='ignore') as logFile:
+        for line in logFile:
+            entry = LogEntry(line)
+            feature1(entry)
+            feature2(entry)
+            feature3(entry)
+            feature4(entry)
 
-with open(logPath, 'r', errors='ignore') as logFile:
-    for line in logFile:
-        feature1(line)
-        feature2(line)
-        feature3(line, resolution)
-        feature4(line)
+    # create a topTen list of hosts in descending order by number of accesses
+    topHosts = topTen(hostDict)
+    # output to hosts.txt
+    for x in topHosts:
+        print(x[0] + ',' + str(x[1]), file=hostsFile)
 
-# create a topTen list of hosts in descending order by number of accesses
-topHosts = topTen(hostDict)
-# output to hosts.txt
-for x in topHosts:
-    print(x[0] + ',' + str(x[1]), file=hostsFile)
+    # Create a topTen list of resources in descending order by bytes.
+    topResources = topTen(resourceDict)
+    # Output to resources.txt
+    for x in topResources:
+        print(x[0], file=resourcesFile)
 
-# Create a topTen list of resources in descending order by bytes.
-topResources = topTen(resourceDict)
-# Output to resources.txt
-for x in topResources:
-    print(x[0], file=resourcesFile)
+    # Make topTen list of busiest 1-hour windows
+    topHours = topTen(hoursDict)
+    # Output to hours.txt
+    for i in topHours:
+        print(convertHours(i[0]) + ' -0400,' + str(i[1]), file=hoursFile)
 
-# Make topTen list of busiest 1-hour windows
-topHours = topTen(hoursDict)
-# Output to hours.txt
-for i in topHours:
-    print(convertHours(i[0]) + ' -0400,' + str(i[1]), file=hoursFile)
+if __name__ == '__main__':
+    # Establish filepaths for the input (log.txt) an output files (hours.txt, hosts.txt, blocked.txt, and resources.txt).
+    logPath = sys.argv[1]
+    hostsPath = sys.argv[2]
+    hoursPath = sys.argv[3]
+    resourcesPath = sys.argv[4]
+    blockedPath = sys.argv[5]
 
-'''Close output files'''
-hoursFile.close()
-hostsFile.close()
-blockedFile.close()
-resourcesFile.close()
+    # Open output files for writing in the main program.
+    hoursFile = open(hoursPath, 'w')
+    hostsFile = open(hostsPath, 'w')
+    blockedFile = open(blockedPath, 'w')
+    resourcesFile = open(resourcesPath, 'w')
+
+    main()
+
+    '''Close output files'''
+    hoursFile.close()
+    hostsFile.close()
+    blockedFile.close()
+    resourcesFile.close()
+
