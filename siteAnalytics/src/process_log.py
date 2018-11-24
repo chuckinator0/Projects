@@ -96,22 +96,6 @@ def topTen(dictionary):
     topTen.reverse()
     return topTen
 
-def convertdatetime(line):
-    '''The convertdatetime function takes a line of data and returns its associated Python datetime object.'''
-    lineSplit = line.split()
-    return parseDateTime(lineSplit[3])
-
-def parseDateTime(t):
-    # [01/Jul/1995:00:00:59
-    return datetime.strptime(t, "[%d/%b/%Y:%H:%M:%S")
-
-def convertHours(time):
-    '''The convertHours function converts a datetime object to the specified output format for hours.txt.'''
-    return datetime.strftime(time, "%d/%b/%Y:%H:%M:%S")
-
-def roundDown(dt):
-    return dt.replace(minute=0, second=0)
-
 def feature1(entry):
     '''This function produces a dictionary {hosts: number of accesses by host} (see hostDict)'''
     # if new host is already in the dictionary, add 1 to the number of accesses.
@@ -129,6 +113,9 @@ def feature2(entry):
         resourceDict[entry.resource] = entry.contentLength
 
 def feature3(entry):
+    def roundDown(dt):
+        return dt.replace(minute=0, second=0)
+
     # Calculate busiest hours
     roundedtime = roundDown(entry.timestamp)
     if roundedtime not in hoursDict:
@@ -212,7 +199,8 @@ def main():
     topHours = topTen(hoursDict)
     # Output to hours.txt
     for i in topHours:
-        print(convertHours(i[0]) + ' -0400,' + str(i[1]), file=hoursFile)
+        print(datetime.strftime(i[0], "%d/%b/%Y:%H:%M:%S %z") + ',' + str(i[1]),
+                file=hoursFile)
 
 if __name__ == '__main__':
     # Establish filepaths for the input (log.txt) an output files (hours.txt, hosts.txt, blocked.txt, and resources.txt).
