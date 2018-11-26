@@ -133,7 +133,7 @@ def feature4(entry):
             else:
                 print(entry.line, file=blockedFile)
                 return
-        if entry.statusCode == '401':
+        if entry.statusCode == 401:
             if entry.host in failed:
                 failed[entry.host].append(entry.timestamp)
                 if len(failed[entry.host]) > 3:
@@ -144,11 +144,11 @@ def feature4(entry):
             if is_blocked(entry.host):
                 cooldowntime = entry.timestamp + timedelta(minutes=5)
                 blocked[entry.host] = cooldowntime
-        elif entry.statusCode == '200':
+        elif entry.statusCode == 200:
             if entry.host in failed:
-                del failed[host]
+                del failed[entry.host]
             if entry.host in blocked:
-                del blocked[host]
+                del blocked[entry.host]
 
 def is_blocked(host):
     return len(failed[host]) >= 3 and failed[host][-1] - failed[host][-3] < timedelta(seconds=20)
