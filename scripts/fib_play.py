@@ -19,3 +19,18 @@ def fib(n):
 
 
 print([fib(i) for i in range(1,6)])
+
+
+## With generators this time!
+
+def fib2():
+	a, b = 0, 1
+	while True:
+		yield a
+		a, b = b, a + b
+
+result = fib2()
+for i in range(40):
+	print(result.__next__())
+	
+
