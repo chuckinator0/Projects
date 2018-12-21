@@ -101,3 +101,9 @@ def urlSimilarity(url1, url2):
     similarity += query_similarity_score(url1_parse[4], url2_parse[4])
     
     return similarity
+
+
+print(urlSimilarity("ftp://www.example.com/query?varName=value","http://example.com/query?varName=value")) # should return 3
+
+
+
