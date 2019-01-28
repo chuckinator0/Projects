@@ -21,7 +21,7 @@ with open('./cron_parse.dms', 'r') as file:
 		s = re.search(regex, line)
 		# set the time the command occured
 		time = find_datetime(line)
-		if s is not None:
+		if s:
 			# group by command name
 			# for some reason I can't set s.group(1) as a variable
 			if s.group(1) not in crond_dict:
