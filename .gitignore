@@ -1,1 +1,4 @@
-santaData.*
+santaData*
+.vscode/
+.pytest_cache/
+.idea/

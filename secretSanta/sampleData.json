@@ -1,0 +1,23 @@
+{
+    "0": {
+        "id": 0,
+        "name": "Chuck",
+        "email":"email@email.com",
+        "noSanta": [
+            "Caroline",
+            "Sasa"
+        ],
+        "lastYear": "Sasa"
+    },
+
+    "1": {
+        "id": 1,
+        "name": "Caroline",
+        "email":"email@email.com",
+        "noSanta": [
+            "Chuck",
+            "Mercedes"
+        ],
+        "lastYear": "Mercedes"
+    }
+}
