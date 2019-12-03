@@ -13,6 +13,7 @@ from email.mime.text import MIMEText
 
 #### Initialize Variables
 file = 'santaData2019.json'
+secrets_file = "santaDataSecrets"
 # TODO: define output json file for next year's input data
 
 
@@ -20,7 +21,7 @@ file = 'santaData2019.json'
 def main():
     santaData = load_data(file)
     santaDict = assign_santas(santaData)
-    email_assignments(santaData, santaDict)
+    email_assignments(santaData, santaDict, secrets_file)
     # update_json(santaData, santaDict, outputFile.json)
 
 #### Helper Functions
@@ -45,11 +46,11 @@ def assign_santas(santaData):
     return santaDict
 
 
-def email_assignments(santaData, santaDict):
+def email_assignments(santaData, santaDict, secrets_file):
     """see https://stackabuse.com/how-to-send-emails-with-gmail-using-python/ for more info"""
 
     # load credentials
-    with open("santaDataSecrets",'r') as secret:
+    with open(secrets_file, 'r') as secret:
         for line in secret:
             data = line.split('=')
             if data[0] == "email":
@@ -123,6 +124,4 @@ def goodlist(array, santaData):
 
 #### Run main program
 if __name__ == "__main__":
-    santaData = load_data(file)
-    santaDict = assign_santas(santaData)
-    print(santaDict)
+    main()
