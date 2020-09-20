@@ -1,2 +1,4 @@
 .idea/
 santaData*
+*.json
+!sampleData.json
